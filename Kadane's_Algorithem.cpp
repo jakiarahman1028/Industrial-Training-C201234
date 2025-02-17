@@ -29,48 +29,49 @@ const int dy4[4] = {1,0,-1,0};
 const int dx8[8] = {0,1,0,-1,1,-1,1,-1};
 const int dy8[8] = {1,0,-1,0,1,-1,-1,1};
 
-
-
- 
 int main(){
-	fasterInOut;
-	
-	int t;
-	cin >> t;
-	
-	int cnt = 1;
-	while(t--){
-		int n;
-		cin >> n;
-	
-		int ar[n+1],ans=1,sum=0,in=1;
-		int mx=-2,mi=-1;
+    fasterInOut;
+    
+    int t;
+    cin >> t;
+    
+    int cnt = 1;
+    while(t--){
+        int n;
+        cin >> n;
+        
+        // Edge case: No segments to evaluate
+        if (n <= 1) {
+            cout << "Route " << cnt++ << " has no nice parts\n";
+            continue;
+        }
+        
+        int route[n+1], maxSum=1, currentSum=0, startIndex=1;
+        int maxStartIndex=-1, maxEndIndex=-1;
 
-		for(int i=0; i<n-1; i++){
-			cin >> ar[i];
-			sum += ar[i];
-			
-			if(sum < 0){
-				sum = 0;
-				in = i+2;
-			}
-			
-			if(ans < sum || (ans == sum  && mx - mi < i-in+2)){
-				ans = sum;
-				mi = in;
-				mx = i+2;
-			}
-			
-		}
-		
-		
-		if(mi == -1)
-			cout << "Route " << cnt++ << " has no nice parts\n";
-		else
-			cout << "The nicest part of route " << cnt++ << " is between stops " << mi << " and " << mx << "\n";
-		
-		
-	}
-	
+        for(int i=0; i<n-1; i++){
+            cin >> route[i];
+            currentSum += route[i]; // Add current stop's niceness to the running sum
+            
+            if(currentSum < 0){ // If the sum becomes negative, reset the running sum
+                currentSum = 0;
+                startIndex = i+2; // Update the starting index for the next potential segment
+            }
+            
+            // Update the maximum sum and segment indices if a better segment is found
+            if(maxSum < currentSum || (maxSum == currentSum && maxEndIndex - maxStartIndex < i-startIndex+2)){
+                maxSum = currentSum;
+                maxStartIndex = startIndex;
+                maxEndIndex = i+2;
+            }
+        }
+        
+        // If no positive-sum segment is found, output "no nice parts"
+        if(maxStartIndex == -1)
+            cout << "Route " << cnt++ << " has no nice parts\n";
+        else
+            cout << "The nicest part of route " << cnt++ << " is between stops " << maxStartIndex << " and " << maxEndIndex << "\n";
+    }
+    
     return 0;
 }
